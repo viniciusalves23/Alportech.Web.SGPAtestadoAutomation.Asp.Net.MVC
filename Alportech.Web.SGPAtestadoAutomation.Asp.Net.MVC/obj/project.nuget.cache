@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "gBI1scnxbgo=",
+  "success": true,
+  "projectFilePath": "C:\\GIT_REP\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\dotnetseleniumextras.waithelpers\\3.11.0\\dotnetseleniumextras.waithelpers.3.11.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\selenium.support\\4.24.0\\selenium.support.4.24.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\selenium.webdriver\\4.24.0\\selenium.webdriver.4.24.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\seleniumextras.waithelpers\\1.0.2\\seleniumextras.waithelpers.1.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

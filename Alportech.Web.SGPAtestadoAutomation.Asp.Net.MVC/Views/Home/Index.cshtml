@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <h1>Atestados Alunos - SGP Ana Maria</h1>
+    <form id="atestadoForm">
+        <div class="form-group">
+            <label for="aluno">Nome do Aluno:</label>
+            <select id="aluno" required>
+                <option value="">Selecione o aluno</option>
+                <option value="1">ALICE HONORATO DOS SANTOS</option>
+                <option value="2">ARTHUR SILVA ARAUJO</option>
+                <option value="3">CLARICE MANOELA DE SOUZA COSTA</option>
+                <option value="4">ESTHER DE PAULA LIMA</option>
+                <option value="5">GAEL SANTOS FIGUEIREDO</option>
+                <option value="6">GEISON BERNARDO RODRIGUES REIS</option>
+                <option value="7">ISABELLA ALVES DUARTE</option>
+                <option value="8">LORENNA SANCHES MENEZES</option>
+                <option value="9">MARCOS SOARES ALMEIDA</option>
+                <option value="10">MAYA CARVALHO ALVES PEREIRA</option>
+                <option value="11">NOAH SANTOS NASCIMENTO</option>
+                <option value="12">YASMIN DO NASCIMENTO SILVA</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="data">Data do Atestado:</label>
+            <div class="input-icon">
+                <input type="text" id="data" required>
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dias">Quantidade de dias:</label>
+            <input type="number" id="dias" min="1" required>
+        </div>
+        <div class="form-group">
+            <label for="anexo">Anexo Atestado:</label>
+            <input type="file" id="anexo" accept="image/*" required>
+        </div>
+        <button type="submit">Gravar Atestado</button>
+    </form>
+</div>
