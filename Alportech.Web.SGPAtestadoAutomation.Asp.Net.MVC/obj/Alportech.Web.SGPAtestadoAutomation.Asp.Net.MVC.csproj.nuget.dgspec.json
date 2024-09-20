@@ -62,6 +62,18 @@
             "SeleniumExtras.WaitHelpers": {
               "target": "Package",
               "version": "[1.0.2, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "TextCopy": {
+              "target": "Package",
+              "version": "[6.2.1, )"
+            },
+            "Xamarin.Essentials": {
+              "target": "Package",
+              "version": "[1.8.1, )"
             }
           },
           "imports": [

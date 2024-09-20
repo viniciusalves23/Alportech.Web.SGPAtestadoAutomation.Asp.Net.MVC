@@ -37,13 +37,16 @@
             }
         }
 
-        // Capturar dados do formulário
-        const formData = new FormData();
-
         // Capturar o nome do aluno selecionado
         const alunoSelect = document.getElementById('aluno');
         const nomeAluno = alunoSelect.options[alunoSelect.selectedIndex].text;
 
+        // Exibir a modal de progresso com o nome do aluno
+        document.getElementById('mensagemModal').innerText = `Adicionando atestado para o aluno ${nomeAluno}`;
+        $('#progressoModal').modal('show');
+
+        // Capturar dados do formulário
+        const formData = new FormData();
         formData.append('NomeAluno', nomeAluno);
         formData.append('DataAtestado', document.getElementById('data').value);
         formData.append('QuantidadeDias', document.getElementById('dias').value);
@@ -56,12 +59,19 @@
         })
             .then(response => response.json())
             .then(data => {
+                document.getElementById('progressoModal').classList.remove('show');
+                document.querySelector('.modal-backdrop').remove();
+
                 if (data.sucesso) {
-                    alert('Atestado enviado com sucesso!');
+                    alert(`Sucesso: ${data.mensagem}`);
                 } else {
-                    alert('Ocorreu um erro ao enviar o atestado.');
+                    alert(`Erro: ${data.mensagem}`);
                 }
             })
-            .catch(error => console.error('Erro:', error));
+            .catch(error => {
+                document.getElementById('progressoModal').classList.remove('show');
+                document.querySelector('.modal-backdrop').remove();
+                alert(`Erro: ${error}`);
+            });
     });
 });

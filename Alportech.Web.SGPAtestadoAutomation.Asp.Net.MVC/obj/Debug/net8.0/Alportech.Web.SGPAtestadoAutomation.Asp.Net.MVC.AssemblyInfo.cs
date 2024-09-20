@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+23106f937fc6c0923ee15a80be7dd1550bab34ea")]
 [assembly: System.Reflection.AssemblyProductAttribute("Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

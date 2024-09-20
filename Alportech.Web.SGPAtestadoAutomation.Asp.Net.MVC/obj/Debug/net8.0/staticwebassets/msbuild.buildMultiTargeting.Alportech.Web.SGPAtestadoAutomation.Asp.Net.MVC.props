@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC.props" />
+</Project>
