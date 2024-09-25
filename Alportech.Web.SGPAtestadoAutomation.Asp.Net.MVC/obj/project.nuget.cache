@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ObnAKcasmLk=",
+  "dgSpecHash": "nw334kLtsjc=",
   "success": true,
   "projectFilePath": "C:\\GIT_REP\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC.csproj",
   "expectedPackageFiles": [
@@ -12,6 +12,9 @@
     "C:\\Users\\vinicius.alves\\.nuget\\packages\\seleniumextras.waithelpers\\1.0.2\\seleniumextras.waithelpers.1.0.2.nupkg.sha512",
     "C:\\Users\\vinicius.alves\\.nuget\\packages\\system.drawing.common\\8.0.8\\system.drawing.common.8.0.8.nupkg.sha512",
     "C:\\Users\\vinicius.alves\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
+    "C:\\Users\\vinicius.alves\\.nuget\\packages\\system.text.json\\8.0.4\\system.text.json.8.0.4.nupkg.sha512",
     "C:\\Users\\vinicius.alves\\.nuget\\packages\\textcopy\\6.2.1\\textcopy.6.2.1.nupkg.sha512",
     "C:\\Users\\vinicius.alves\\.nuget\\packages\\xamarin.essentials\\1.8.1\\xamarin.essentials.1.8.1.nupkg.sha512"
   ],

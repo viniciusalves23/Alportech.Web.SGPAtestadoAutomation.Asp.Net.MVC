@@ -4,6 +4,7 @@ using OpenQA.Selenium;
 using SGPAtestadoAutomation.Models;
 using System.Diagnostics;
 using OpenQA.Selenium.Support.UI;
+using Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC.Models;
 
 namespace SGPAtestadoAutomation.Controllers
 {
@@ -27,18 +28,32 @@ namespace SGPAtestadoAutomation.Controllers
             if (ModelState.IsValid)
             {
                 var resultado = await RealizarAutomacao(model);
-                return resultado;
+                if (resultado.Sucesso == true)
+                {
+                    TempData["Mensagem"] = resultado.Mensagem;
+                    TempData["Titulo"] = "Atestado Gravado com Sucesso";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Mensagem"] = resultado.Mensagem;
+                    TempData["Titulo"] = "Erro ao Gravar Atestado";
+                    return RedirectToAction("Index");
+                }
             }
-            return Json(new { sucesso = false, mensagem = "O modelo Atestado esta inválido, alguma informação não foi passada corretamente." });
+
+            TempData["Mensagem"] = "O modelo Atestado esta inválido, alguma informação não foi passada corretamente.";
+            TempData["Titulo"] = "Erro na Aplicação";
+            return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> RealizarAutomacao(AtestadoModel model)
+        public async Task<ResultadoAutomacao> RealizarAutomacao(AtestadoModel model)
         {
             DateTime dataAtestado = model.DataAtestado;
 
             if ((dataAtestado.DayOfWeek == DayOfWeek.Saturday || dataAtestado.DayOfWeek == DayOfWeek.Sunday) && model.QuantidadeDias == 1)
             {
-                return Json(new { sucesso = false, mensagem = "O atestado não contém dias letivos para registro. Atestado com data de sábado ou domingo com duração de 1 dia. Nenhum registro necessário." });
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado não contém dias letivos para registro. Atestado com data de sábado ou domingo com duração de 1 dia. Nenhum registro necessário." };
             }
 
             List<DateTime> diasLetivos = new List<DateTime>();
@@ -54,7 +69,7 @@ namespace SGPAtestadoAutomation.Controllers
 
             if (diasLetivos.Count == 0)
             {
-                return Json(new { sucesso = false, mensagem = "O atestado não contém dias letivos para registro. Possivelmente a data do atestado é de sabado ou domingo e a quantidade de dias não contem nenhum dia letivo para registro." });
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado não contém dias letivos para registro. Possivelmente a data do atestado é de sabado ou domingo e a quantidade de dias não contem nenhum dia letivo para registro." };
             }
 
             var options = new ChromeOptions();
@@ -68,17 +83,17 @@ namespace SGPAtestadoAutomation.Controllers
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
                     driver.Navigate().GoToUrl("https://novosgp.sme.prefeitura.sp.gov.br/login");
-                   
+
                     Thread.Sleep(5000);
 
                     driver.FindElement(By.Id("usuario")).SendKeys("9242210");
                     driver.FindElement(By.Id("senha")).SendKeys("Black@062529");
                     driver.FindElement(By.XPath("//button[text()='Acessar']")).Click();
-                   
+
                     Thread.Sleep(5000);
 
                     driver.Navigate().GoToUrl("https://novosgp.sme.prefeitura.sp.gov.br/diario-classe/frequencia-plano-aula");
-                    
+
                     Thread.Sleep(5000);
 
                     foreach (var diaLetivo in diasLetivos)
@@ -96,7 +111,7 @@ namespace SGPAtestadoAutomation.Controllers
                         Thread.Sleep(3000);
 
                         driver.FindElement(By.Id("expandir-retrair-frequencia-collapse")).Click();
-                       
+
                         Thread.Sleep(3000);
 
                         string xpathLinhaAluno = $"//tr[td/div[contains(., '{model.NomeAluno}')]]";
@@ -124,7 +139,7 @@ namespace SGPAtestadoAutomation.Controllers
 
                         IWebElement svgIconModalMotivoAusencia = primeiroTd.FindElement(By.CssSelector("svg.fa-pen-to-square, svg.svg-inline--fa.fa-eye"));
                         svgIconModalMotivoAusencia.Click();
-                        
+
                         Thread.Sleep(3000);
 
                         IWebElement selectMotivoAusencia = driver.FindElement(By.Id("motivo-ausencia"));
@@ -140,11 +155,11 @@ namespace SGPAtestadoAutomation.Controllers
 
                         selectMotivoAusencia.Click();
 
-                        Thread.Sleep(2000); 
+                        Thread.Sleep(2000);
 
                         IWebElement opcaoAtestadoMedicoAluno = driver.FindElement(By.XPath("//div[@id='VALOR_1' and @title='Atestado Médico do Aluno']"));
                         opcaoAtestadoMedicoAluno.Click();
-                        
+
                         Thread.Sleep(2000);
 
                         if (model.AnexoAtestado != null)
@@ -171,17 +186,17 @@ namespace SGPAtestadoAutomation.Controllers
                     }
 
                     Console.WriteLine($"Atestado anexado para o aluno {model.NomeAluno}. Data atestado: {model.DataAtestado.ToShortDateString()}. Qtde dias: {model.QuantidadeDias}.");
-                    return Json(new
+                    return new ResultadoAutomacao
                     {
-                        sucesso = true,
-                        mensagem = $"Atestado anexado para o aluno {model.NomeAluno}.\n\nData atestado: {model.DataAtestado.ToShortDateString()}.\n\nQuantidade dias: {model.QuantidadeDias}.\n\nAtestado registrado nas seguintes datas letivas:\n {string.Join(", ", diasLetivos.Select(d => d.ToString("dd/MM/yyyy")))}"
-                    });
+                        Sucesso = true,
+                        Mensagem = $"Atestado anexado para o aluno {model.NomeAluno}.\n\nData atestado: {model.DataAtestado.ToShortDateString()}.\n\nQuantidade dias: {model.QuantidadeDias}.\n\nAtestado registrado nas seguintes datas letivas:\n {string.Join(", ", diasLetivos.Select(d => d.ToString("dd/MM/yyyy")))}"
+                    };
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Erro na automação: " + ex.Message);
-                return Json(new { sucesso = false, mensagem = ex.Message });
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "Erro na automação: " + ex.Message };
             }
         }
 

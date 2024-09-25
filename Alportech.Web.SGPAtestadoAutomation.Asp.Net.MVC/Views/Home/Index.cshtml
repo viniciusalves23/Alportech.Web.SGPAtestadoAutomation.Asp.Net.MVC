@@ -4,51 +4,148 @@
 
 <div class="container">
     <h1>Atestados Alunos - SGP Ana Maria</h1>
-    <form id="atestadoForm">
+    <form id="atestadoForm" action="@Url.Action("EnviarAtestado", "Home")" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="aluno">Nome do Aluno:</label>
-            <select id="aluno" required>
+            <select name="NomeAluno" id="aluno" required>
                 <option value="">Selecione o aluno</option>
-                <option value="1">ALICE HONORATO DOS SANTOS</option>
-                <option value="2">ARTHUR SILVA ARAUJO</option>
-                <option value="3">CLARICE MANOELA DE SOUZA COSTA</option>
-                <option value="4">ESTHER DE PAULA LIMA</option>
-                <option value="5">GAEL SANTOS FIGUEIREDO</option>
-                <option value="6">GEISON BERNARDO RODRIGUES REIS</option>
-                <option value="7">ISABELLA ALVES DUARTE</option>
-                <option value="8">LORENNA SANCHES MENEZES</option>
-                <option value="9">MARCOS SOARES ALMEIDA</option>
-                <option value="10">MAYA CARVALHO ALVES PEREIRA</option>
-                <option value="11">NOAH SANTOS NASCIMENTO</option>
-                <option value="12">YASMIN DO NASCIMENTO SILVA</option>
+                <option value="ALICE HONORATO DOS SANTOS">ALICE HONORATO DOS SANTOS</option>
+                <option value="ARTHUR SILVA ARAUJO">ARTHUR SILVA ARAUJO</option>
+                <option value="CLARICE MANOELA DE SOUZA COSTA">CLARICE MANOELA DE SOUZA COSTA</option>
+                <option value="ESTHER DE PAULA LIMA">ESTHER DE PAULA LIMA</option>
+                <option value="GAEL SANTOS FIGUEIREDO">GAEL SANTOS FIGUEIREDO</option>
+                <option value="GEISON BERNARDO RODRIGUES REIS">GEISON BERNARDO RODRIGUES REIS</option>
+                <option value="ISABELLA ALVES DUARTE">ISABELLA ALVES DUARTE</option>
+                <option value="LORENNA SANCHES MENEZES">LORENNA SANCHES MENEZES</option>
+                <option value="MARCOS SOARES ALMEIDA">MARCOS SOARES ALMEIDA</option>
+                <option value="MAYA CARVALHO ALVES PEREIRA">MAYA CARVALHO ALVES PEREIRA</option>
+                <option value="NOAH SANTOS NASCIMENTO">NOAH SANTOS NASCIMENTO</option>
+                <option value="YASMIN DO NASCIMENTO SILVA">YASMIN DO NASCIMENTO SILVA</option>
             </select>
         </div>
         <div class="form-group">
             <label for="data">Data do Atestado:</label>
-            <div class="input-icon">
-                <input type="text" id="data" required>
-                <i class="fas fa-calendar-alt"></i>
-            </div>
+            <input type="date" name="DataAtestado" id="data" required>
         </div>
         <div class="form-group">
             <label for="dias">Quantidade de dias:</label>
-            <input type="number" id="dias" min="1" required>
+            <input type="number" name="QuantidadeDias" id="dias" min="1" required>
         </div>
         <div class="form-group">
             <label for="anexo">Anexo Atestado:</label>
-            <input type="file" id="anexo" accept="image/*" required>
+            <input type="file" name="AnexoAtestado" id="anexo" accept="image/*" required>
         </div>
-        <button type="submit">Gravar Atestado</button>
+        <button id="btnGravarAtestado">Gravar Atestado</button>
     </form>
 </div>
 
+<!-- Modal de adicionando aluno -->
 <div class="modal fade" id="progressoModal" tabindex="-1" role="dialog" aria-labelledby="progressoModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" data-backdrop="static" data-keyboard="false">
         <div class="modal-content">
             <div class="modal-body d-flex align-items-center">
                 <i class="fa fa-spinner fa-spin" id="iconeExecucao" aria-hidden="true"></i>
-                <span id="mensagemModal" class="ml-3">Adicionando atestado...</span>
+                <span id="mensagemModalProgresso" class="ml-3">Adicionando atestado...</span>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Mensagem Sucesso/Erro-->
+<div class="modal fade" id="mensagemModal" tabindex="-1" role="dialog" aria-labelledby="mensagemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (TempData["Titulo"] != null)
+                {
+                    <h5 class="modal-title" id="mensagemModalLabel">@TempData["Titulo"]</h5>
+                }
+                else
+                {
+                    <h5 class="modal-title" id="mensagemModalLabel">Mensagem</h5>
+                }
+            </div>
+            @if (TempData["Mensagem"] != null)
+            {
+                <div class="modal-body" id="mensagemModalBody">
+                    @TempData["Mensagem"]
+                </div>
+            }
+            else
+            {
+                <div class="modal-body" id="mensagemModalBody">
+                    Erro ao obter mensagem.
+                </div>
+            }
+            <div class="modal-footer">
+                <button id="fecharModalMensgaem" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#btnGravarAtestado').click(function () {
+                // Verificar se todos os campos estão preenchidos
+                const campos = [
+                    { id: 'aluno', mensagem: 'Por favor, selecione um aluno.' },
+                    { id: 'data', mensagem: 'Por favor, selecione uma data.' },
+                    { id: 'dias', mensagem: 'Por favor, informe a quantidade de dias.' },
+                    { id: 'anexo', mensagem: 'Por favor, anexe o atestado.' }
+                ];
+
+                for (let campo of campos) {
+                    const elemento = document.getElementById(campo.id);
+                    if (!elemento.value) {
+                        alert(campo.mensagem);
+                        elemento.focus();
+                        return;
+                    }
+                }
+                this.submit();
+            });
+
+            $('#atestadoForm').on('submit', function () {
+
+                // Obtém o nome do aluno selecionado
+                const alunoSelect = document.getElementById('aluno');
+                const nomAluno = alunoSelect.options[alunoSelect.selectedIndex].text;
+
+                $('#mensagemModalProgresso').text('Adicionando atestado para o aluno: ' + nomAluno + '. Por favor Aguarde...');
+
+                $('#progressoModal').modal('show');
+
+            });
+
+        @if (TempData["Mensagem"] != null)
+        {
+            @:$('#mensagemModal').modal('show');
+        }
+
+                $('#fecharModalMensgaem').click(function () {
+                    $('#mensagemModal').modal('hide');
+                });
+
+        });
+    </script>
+
+    @* script para manipulação modal de progresso *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('progressoModal');
+
+            modal.addEventListener('show.bs.modal', function () {
+                // Impede o fechamento ao clicar fora
+                modal.setAttribute('data-backdrop', 'static');
+                modal.setAttribute('data-keyboard', 'false');
+            });
+
+            modal.addEventListener('hide.bs.modal', function (e) {
+                e.preventDefault(); // Previne o fechamento
+            });
+        });
+    </script>
+}
