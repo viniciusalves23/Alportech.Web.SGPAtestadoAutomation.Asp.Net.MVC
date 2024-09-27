@@ -120,15 +120,14 @@
 
             });
 
-        @if (TempData["Mensagem"] != null)
-        {
-            @:$('#mensagemModal').modal('show');
-        }
+            @if (TempData["Mensagem"] != null)
+            {
+                @:$('#mensagemModal').modal('show');
+            }
 
-                $('#fecharModalMensgaem').click(function () {
-                    $('#mensagemModal').modal('hide');
-                });
-
+            $('#fecharModalMensgaem').click(function () {
+                $('#mensagemModal').modal('hide');
+            });
         });
     </script>
 

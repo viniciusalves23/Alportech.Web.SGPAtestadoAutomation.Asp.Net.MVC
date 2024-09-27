@@ -50,6 +50,7 @@ namespace SGPAtestadoAutomation.Controllers
         public async Task<ResultadoAutomacao> RealizarAutomacao(AtestadoModel model)
         {
             DateTime dataAtestado = model.DataAtestado;
+            string dataFormatada = dataAtestado.ToString("dd/MM/yyyy");
 
             if ((dataAtestado.DayOfWeek == DayOfWeek.Saturday || dataAtestado.DayOfWeek == DayOfWeek.Sunday) && model.QuantidadeDias == 1)
             {
@@ -105,7 +106,9 @@ namespace SGPAtestadoAutomation.Controllers
 
                         Thread.Sleep(3000);
 
-                        dataInput.SendKeys(diaLetivo.ToString("dd/MM/yyyy"));
+                        // Formatar a data corretamente
+                        string dataFormatadaDiaLetivo = diaLetivo.ToString("dd/MM/yyyy");
+                        dataInput.SendKeys(dataFormatadaDiaLetivo);
                         dataInput.SendKeys(Keys.Enter);
 
                         Thread.Sleep(3000);

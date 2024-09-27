@@ -2,6 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>https</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>C:\GIT_REP\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\GIT_REP\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC\Properties\PublishProfiles\FolderProfile2.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
