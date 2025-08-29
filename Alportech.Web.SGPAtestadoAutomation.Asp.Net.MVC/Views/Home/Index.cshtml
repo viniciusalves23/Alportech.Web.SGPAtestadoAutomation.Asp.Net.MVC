@@ -85,9 +85,11 @@
 </div>
 
 @section Scripts {
+    @* script para envio do formulário *@
     <script>
         $(document).ready(function () {
 
+            //envio formuçario
             $('#btnGravarAtestado').click(function () {
                 // Verificar se todos os campos estão preenchidos
                 const campos = [
@@ -105,9 +107,11 @@
                         return;
                     }
                 }
+
                 this.submit();
             });
 
+            //exibe modal ao enviar formulario
             $('#atestadoForm').on('submit', function () {
 
                 // Obtém o nome do aluno selecionado

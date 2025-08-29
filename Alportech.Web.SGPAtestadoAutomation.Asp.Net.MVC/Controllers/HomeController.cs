@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
+Ôªøusing Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using SGPAtestadoAutomation.Models;
 using System.Diagnostics;
 using OpenQA.Selenium.Support.UI;
 using Alportech.Web.SGPAtestadoAutomation.Asp.Net.MVC.Models;
+using System.Globalization;
 
 namespace SGPAtestadoAutomation.Controllers
 {
@@ -42,25 +43,25 @@ namespace SGPAtestadoAutomation.Controllers
                 }
             }
 
-            TempData["Mensagem"] = "O modelo Atestado esta inv·lido, alguma informaÁ„o n„o foi passada corretamente.";
-            TempData["Titulo"] = "Erro na AplicaÁ„o";
+            TempData["Mensagem"] = "O modelo Atestado esta inv√°lido, alguma informa√ß√£o n√£o foi passada corretamente.";
+            TempData["Titulo"] = "Erro na Aplica√ß√£o";
             return RedirectToAction("Index");
         }
 
         public async Task<ResultadoAutomacao> RealizarAutomacao(AtestadoModel model)
         {
-            DateTime dataAtestado = model.DataAtestado;
-            string dataFormatada = dataAtestado.ToString("dd/MM/yyyy");
+            model.DataAtestado = DateTime.ParseExact(model.DataAtestado.ToString("dd/MM/yyyy"), "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
-            if ((dataAtestado.DayOfWeek == DayOfWeek.Saturday || dataAtestado.DayOfWeek == DayOfWeek.Sunday) && model.QuantidadeDias == 1)
+            if ((model.DataAtestado.DayOfWeek == DayOfWeek.Saturday || model.DataAtestado.DayOfWeek == DayOfWeek.Sunday) && model.QuantidadeDias == 1)
             {
-                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado n„o contÈm dias letivos para registro. Atestado com data de s·bado ou domingo com duraÁ„o de 1 dia. Nenhum registro necess·rio." };
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado n√£o cont√©m dias letivos para registro. Atestado com data de s√°bado ou domingo com dura√ß√£o de 1 dia. Nenhum registro necess√°rio." };
             }
 
             List<DateTime> diasLetivos = new List<DateTime>();
+
             for (int i = 0; i < model.QuantidadeDias; i++)
             {
-                DateTime diaAtual = dataAtestado.AddDays(i);
+                var diaAtual = model.DataAtestado.AddDays(i);
 
                 if (diaAtual.DayOfWeek != DayOfWeek.Saturday && diaAtual.DayOfWeek != DayOfWeek.Sunday)
                 {
@@ -70,7 +71,7 @@ namespace SGPAtestadoAutomation.Controllers
 
             if (diasLetivos.Count == 0)
             {
-                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado n„o contÈm dias letivos para registro. Possivelmente a data do atestado È de sabado ou domingo e a quantidade de dias n„o contem nenhum dia letivo para registro." };
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "O atestado n√£o cont√©m dias letivos para registro. Possivelmente a data do atestado √© de sabado ou domingo e a quantidade de dias n√£o contem nenhum dia letivo para registro." };
             }
 
             var options = new ChromeOptions();
@@ -83,22 +84,29 @@ namespace SGPAtestadoAutomation.Controllers
                 {
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
+                    // Acessar a pÔøΩgina de login do SGP
                     driver.Navigate().GoToUrl("https://novosgp.sme.prefeitura.sp.gov.br/login");
 
+                    // Esperar 5 segundos
                     Thread.Sleep(5000);
 
+                    // Preencher campos de login
                     driver.FindElement(By.Id("usuario")).SendKeys("9242210");
                     driver.FindElement(By.Id("senha")).SendKeys("Black@062529");
                     driver.FindElement(By.XPath("//button[text()='Acessar']")).Click();
 
+                    // Esperar 5 segundos
                     Thread.Sleep(5000);
 
+                    // Aguarde a pÔøΩgina de frequÔøΩncias carregar
                     driver.Navigate().GoToUrl("https://novosgp.sme.prefeitura.sp.gov.br/diario-classe/frequencia-plano-aula");
 
+                    // Esperar 5 segundos
                     Thread.Sleep(5000);
 
                     foreach (var diaLetivo in diasLetivos)
                     {
+                        // Preencher a data de frequÔøΩncia com a data do atestado
                         var dataInput = driver.FindElement(By.Id("SGP_DATE_SELECIONAR_DATA_FREQUENCIA_PLANO_AULA"));
 
                         dataInput.SendKeys(Keys.Control + 'a');
@@ -106,33 +114,49 @@ namespace SGPAtestadoAutomation.Controllers
 
                         Thread.Sleep(3000);
 
-                        // Formatar a data corretamente
-                        string dataFormatadaDiaLetivo = diaLetivo.ToString("dd/MM/yyyy");
-                        dataInput.SendKeys(dataFormatadaDiaLetivo);
+                        dataInput.SendKeys(diaLetivo.ToString("dd/MM/yyyy"));
                         dataInput.SendKeys(Keys.Enter);
 
-                        Thread.Sleep(3000);
+                        // Esperar 5 segundos
+                        Thread.Sleep(5000);
 
-                        driver.FindElement(By.Id("expandir-retrair-frequencia-collapse")).Click();
+                        // Clicar no botÔøΩo para expandir o campo de frequÔøΩncia
+                        IWebElement expandButton = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("expandir-retrair-frequencia-collapse")));
+                        expandButton.Click();
 
+                        // Esperar 3 segundos
                         Thread.Sleep(3000);
 
                         string xpathLinhaAluno = $"//tr[td/div[contains(., '{model.NomeAluno}')]]";
-                        IWebElement linhaAluno = driver.FindElement(By.XPath(xpathLinhaAluno));
+                        IWebElement linhaAluno = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath(xpathLinhaAluno)));
 
                         if (linhaAluno != null)
                         {
-                            IWebElement terceiroTd = linhaAluno.FindElement(By.CssSelector("td:nth-child(3)"));
-                            IWebElement svgIcon = terceiroTd.FindElement(By.ClassName("fa-circle-xmark"));
+                            // Dentro do <tr> encontrado, localize o terceiro <td> (contem icones de presenÔøΩa e falta)
+                            IWebElement terceiroTd = linhaAluno.FindElement(By.XPath("./td[3]"));
+
+                            // Dentro do terceiro <td>, localize o ÔøΩcone SVG com a classe 'fa-circle-xmark' (ICONE FALTA)
+                            IWebElement svgIcon = terceiroTd.FindElement(By.CssSelector("svg.fa-circle-xmark"));
 
                             if (svgIcon != null)
                             {
+                                //Marcar falta
                                 svgIcon.Click();
                             }
+                            else
+                            {
+                                Console.WriteLine("ÔøΩcone de falta nÔøΩo encontrado.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Linha do aluno nÔøΩo encontrada.");
                         }
 
+                        // Esperar 3 segundos
                         Thread.Sleep(3000);
 
+                        // Clicar no botÔøΩo Alterar ou Cadastrar
                         var botaoAlterar = driver.FindElement(By.Id("SGP_BUTTON_ALTERAR_CADASTRAR"));
                         botaoAlterar.Click();
 
@@ -147,7 +171,7 @@ namespace SGPAtestadoAutomation.Controllers
 
                         IWebElement selectMotivoAusencia = driver.FindElement(By.Id("motivo-ausencia"));
 
-                        bool campoPreenchido = driver.FindElements(By.XPath("//span[contains(@class, 'ant-select-selection-item') and contains(text(), 'Atestado MÈdico do Aluno')]")).Count > 0;
+                        bool campoPreenchido = driver.FindElements(By.XPath("//span[contains(@class, 'ant-select-selection-item') and contains(text(), 'Atestado M√©dico do Aluno')]")).Count > 0;
 
                         if (campoPreenchido)
                         {
@@ -160,11 +184,12 @@ namespace SGPAtestadoAutomation.Controllers
 
                         Thread.Sleep(2000);
 
-                        IWebElement opcaoAtestadoMedicoAluno = driver.FindElement(By.XPath("//div[@id='VALOR_1' and @title='Atestado MÈdico do Aluno']"));
+                        IWebElement opcaoAtestadoMedicoAluno = driver.FindElement(By.XPath("//div[@id='VALOR_1' and @title='Atestado M√©dico do Aluno']"));
                         opcaoAtestadoMedicoAluno.Click();
 
                         Thread.Sleep(2000);
 
+                        // Anexar o atestado se for o primeiro dia
                         if (model.AnexoAtestado != null)
                         {
                             driver.FindElement(By.ClassName("jodit-wysiwyg")).SendKeys(".");
@@ -180,14 +205,12 @@ namespace SGPAtestadoAutomation.Controllers
                             }
                         }
 
-                        Thread.Sleep(3000);
-
+                        // Salvar
                         var botaoSalvar = driver.FindElement(By.Id("btn-salvar-anotacao"));
                         botaoSalvar.Click();
-
-                        Thread.Sleep(2000);
                     }
 
+                    // Mensagem de sucesso
                     Console.WriteLine($"Atestado anexado para o aluno {model.NomeAluno}. Data atestado: {model.DataAtestado.ToShortDateString()}. Qtde dias: {model.QuantidadeDias}.");
                     return new ResultadoAutomacao
                     {
@@ -198,8 +221,8 @@ namespace SGPAtestadoAutomation.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erro na automaÁ„o: " + ex.Message);
-                return new ResultadoAutomacao { Sucesso = false, Mensagem = "Erro na automaÁ„o: " + ex.Message };
+                Console.WriteLine("Erro na automa√ß√£o: " + ex.Message);
+                return new ResultadoAutomacao { Sucesso = false, Mensagem = "Erro na automa√ß√£o: " + ex.Message };
             }
         }
 
